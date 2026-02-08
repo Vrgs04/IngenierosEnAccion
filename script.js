@@ -1,30 +1,10 @@
 // Banco editable de preguntas.
 const questions = [
-  {
-    question: "¿Cuál de estos elementos pertenece al ciclo de vida clásico del software?",
-    options: { A: "Soldadura de PCB", B: "Análisis de requerimientos", C: "Overclock de CPU", D: "Render de animaciones 3D" },
-    correct: "B"
-  },
-  {
-    question: "En redes, ¿qué dispositivo enruta paquetes entre diferentes redes?",
-    options: { A: "Router", B: "Switch", C: "Hub", D: "Repetidor" },
-    correct: "A"
-  },
-  {
-    question: "¿Qué estructura almacena pares clave-valor de forma eficiente?",
-    options: { A: "Lista enlazada", B: "Pila", C: "Tabla hash", D: "Cola" },
-    correct: "C"
-  },
-  {
-    question: "¿Qué unidad se usa para medir potencia eléctrica?",
-    options: { A: "Voltio", B: "Amperio", C: "Ohmio", D: "Vatio" },
-    correct: "D"
-  },
-  {
-    question: "¿Qué práctica busca detectar errores antes de integrar código al proyecto principal?",
-    options: { A: "Deploy manual sin pruebas", B: "Code review y pruebas", C: "Cambiar contraseñas", D: "Reducir comentarios" },
-    correct: "B"
-  }
+  { question: "¿Cuál de estos elementos pertenece al ciclo de vida clásico del software?", options: { A: "Soldadura de PCB", B: "Análisis de requerimientos", C: "Overclock de CPU", D: "Render de animaciones 3D" }, correct: "B" },
+  { question: "En redes, ¿qué dispositivo enruta paquetes entre diferentes redes?", options: { A: "Router", B: "Switch", C: "Hub", D: "Repetidor" }, correct: "A" },
+  { question: "¿Qué estructura almacena pares clave-valor de forma eficiente?", options: { A: "Lista enlazada", B: "Pila", C: "Tabla hash", D: "Cola" }, correct: "C" },
+  { question: "¿Qué unidad se usa para medir potencia eléctrica?", options: { A: "Voltio", B: "Amperio", C: "Ohmio", D: "Vatio" }, correct: "D" },
+  { question: "¿Qué práctica busca detectar errores antes de integrar código al proyecto principal?", options: { A: "Deploy manual sin pruebas", B: "Code review y pruebas", C: "Cambiar contraseñas", D: "Reducir comentarios" }, correct: "B" }
 ];
 
 const state = {
@@ -34,7 +14,8 @@ const state = {
   },
   currentTeam: "A",
   currentQuestionIndex: -1,
-  answeredCurrentQuestion: false
+  answeredCurrentQuestion: false,
+  questionsStarted: false
 };
 
 const $ = (id) => document.getElementById(id);
@@ -48,6 +29,8 @@ const questionValue = $("questionValue");
 const questionText = $("questionText");
 const statusMessage = $("statusMessage");
 const optionButtons = [...document.querySelectorAll(".option-btn")];
+const questionsIntro = $("questionsIntro");
+const questionsContent = $("questionsContent");
 
 function addParticipantInput(teamKey, value = "") {
   const list = teamKey === "A" ? $("participantsA") : $("participantsB");
@@ -74,9 +57,7 @@ function addParticipantInput(teamKey, value = "") {
 
 function getParticipants(teamKey) {
   const list = teamKey === "A" ? $("participantsA") : $("participantsB");
-  return [...list.querySelectorAll("input")]
-    .map((i) => i.value.trim())
-    .filter(Boolean);
+  return [...list.querySelectorAll("input")].map((i) => i.value.trim()).filter(Boolean);
 }
 
 function showScreen(screen) {
@@ -86,7 +67,6 @@ function showScreen(screen) {
 
 function switchCurrentTeam(teamKey) {
   state.currentTeam = teamKey;
-  $("currentTeamLabel").textContent = state.teams[teamKey].name;
   $("teamCardA").classList.toggle("active-turn", teamKey === "A");
   $("teamCardB").classList.toggle("active-turn", teamKey === "B");
   updateQuestionValue();
@@ -100,10 +80,8 @@ function updateScoreboard() {
   $("streakA").textContent = state.teams.A.streak;
   $("streakB").textContent = state.teams.B.streak;
 
-  const playersAText = state.teams.A.players.length ? state.teams.A.players.join(", ") : "-";
-  const playersBText = state.teams.B.players.length ? state.teams.B.players.join(", ") : "-";
-  $("playersA").textContent = `Participantes: ${playersAText}`;
-  $("playersB").textContent = `Participantes: ${playersBText}`;
+  $("playersA").textContent = `Participantes: ${state.teams.A.players.length ? state.teams.A.players.join(", ") : "-"}`;
+  $("playersB").textContent = `Participantes: ${state.teams.B.players.length ? state.teams.B.players.join(", ") : "-"}`;
 }
 
 function updateQuestionValue() {
@@ -122,6 +100,19 @@ function resetQuestionArea() {
   updateQuestionValue();
 }
 
+function prepareQuestionFlow() {
+  state.questionsStarted = false;
+  questionsIntro.classList.remove("hidden");
+  questionsContent.classList.add("hidden");
+}
+
+function startQuestionsFlow() {
+  state.questionsStarted = true;
+  questionsIntro.classList.add("hidden");
+  questionsContent.classList.remove("hidden");
+  goToNextQuestion();
+}
+
 function startGame() {
   state.teams.A.name = $("teamAInput").value.trim() || "Equipo A";
   state.teams.B.name = $("teamBInput").value.trim() || "Equipo B";
@@ -132,17 +123,18 @@ function startGame() {
   state.teams.B.score = 0;
   state.teams.A.streak = 0;
   state.teams.B.streak = 0;
-
   state.currentQuestionIndex = -1;
   state.answeredCurrentQuestion = false;
 
   updateScoreboard();
   switchCurrentTeam("A");
   resetQuestionArea();
+  prepareQuestionFlow();
   showScreen(gameScreen);
 }
 
 function goToNextQuestion() {
+  if (!state.questionsStarted) return;
   if (state.currentQuestionIndex >= questions.length - 1) return endGame();
 
   state.currentQuestionIndex += 1;
@@ -163,6 +155,7 @@ function goToNextQuestion() {
 }
 
 function handleAnswer(selectedOption) {
+  if (!state.questionsStarted) return;
   if (state.currentQuestionIndex < 0 || state.currentQuestionIndex >= questions.length) return;
   if (state.answeredCurrentQuestion) return;
 
@@ -223,13 +216,19 @@ function resetToStart() {
 $("addParticipantA").addEventListener("click", () => addParticipantInput("A"));
 $("addParticipantB").addEventListener("click", () => addParticipantInput("B"));
 $("startGameBtn").addEventListener("click", startGame);
-$("switchToA").addEventListener("click", () => switchCurrentTeam("A"));
-$("switchToB").addEventListener("click", () => switchCurrentTeam("B"));
+$("startQuestionsBtn").addEventListener("click", startQuestionsFlow);
 $("nextQuestionBtn").addEventListener("click", goToNextQuestion);
 $("finishBtn").addEventListener("click", endGame);
 $("restartBtn").addEventListener("click", resetToStart);
+
+$("teamCardA").addEventListener("click", () => switchCurrentTeam("A"));
+$("teamCardB").addEventListener("click", () => switchCurrentTeam("B"));
+$("teamCardA").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") switchCurrentTeam("A"); });
+$("teamCardB").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") switchCurrentTeam("B"); });
+
 optionButtons.forEach((btn) => btn.addEventListener("click", () => handleAnswer(btn.dataset.option)));
 
 questionTotal.textContent = questions.length;
 addParticipantInput("A", "Jugador 1");
 addParticipantInput("B", "Jugador 1");
+prepareQuestionFlow();

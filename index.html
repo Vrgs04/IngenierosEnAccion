@@ -48,9 +48,9 @@
 
     <section id="gameScreen" class="screen">
       <div class="card">
-        <h2>Marcador</h2>
+        <h2>Marcador (haz clic en el equipo que responde)</h2>
         <div class="scoreboard">
-          <article id="teamCardA" class="team-card">
+          <article id="teamCardA" class="team-card clickable-team" role="button" tabindex="0" aria-label="Seleccionar equipo A para responder">
             <div id="teamNameA" class="team-name">Equipo A</div>
             <div id="playersA" class="players-preview">Participantes: -</div>
             <div class="team-stats">
@@ -59,7 +59,7 @@
             </div>
           </article>
 
-          <article id="teamCardB" class="team-card">
+          <article id="teamCardB" class="team-card clickable-team" role="button" tabindex="0" aria-label="Seleccionar equipo B para responder">
             <div id="teamNameB" class="team-name">Equipo B</div>
             <div id="playersB" class="players-preview">Participantes: -</div>
             <div class="team-stats">
@@ -70,33 +70,32 @@
         </div>
       </div>
 
-      <div class="card">
-        <div class="turn-switcher">
-          <span><strong>Equipo respondiendo:</strong> <span id="currentTeamLabel">Equipo A</span></span>
-          <button id="switchToA" class="btn secondary">Responde Equipo A</button>
-          <button id="switchToB" class="btn secondary">Responde Equipo B</button>
-        </div>
-      </div>
-
       <div class="card question-box">
-        <div class="question-meta">
-          <span>Pregunta <strong id="questionIndex">0</strong>/<strong id="questionTotal">0</strong></span>
-          <span>Valor actual: <strong id="questionValue">+1</strong> punto(s)</span>
-        </div>
-        <div id="questionText" class="question-text">Presiona “Siguiente pregunta” para comenzar.</div>
-
-        <div class="options">
-          <button class="option-btn" data-option="A" id="optionA">A) -</button>
-          <button class="option-btn" data-option="B" id="optionB">B) -</button>
-          <button class="option-btn" data-option="C" id="optionC">C) -</button>
-          <button class="option-btn" data-option="D" id="optionD">D) -</button>
+        <div id="questionsIntro" class="questions-intro center-col">
+          <p class="subtitle">Cuando estén listos, inicia la ronda de preguntas.</p>
+          <button id="startQuestionsBtn" class="btn">Iniciar con las preguntas</button>
         </div>
 
-        <div id="statusMessage" class="status"></div>
+        <div id="questionsContent" class="hidden">
+          <div class="question-meta">
+            <span>Pregunta <strong id="questionIndex">0</strong>/<strong id="questionTotal">0</strong></span>
+            <span>Valor actual: <strong id="questionValue">+1</strong> punto(s)</span>
+          </div>
+          <div id="questionText" class="question-text">Presiona “Siguiente pregunta” para comenzar.</div>
 
-        <div class="inline-actions">
-          <button id="nextQuestionBtn" class="btn">Siguiente pregunta</button>
-          <button id="finishBtn" class="btn warn">Finalizar juego</button>
+          <div class="options">
+            <button class="option-btn" data-option="A" id="optionA">A) -</button>
+            <button class="option-btn" data-option="B" id="optionB">B) -</button>
+            <button class="option-btn" data-option="C" id="optionC">C) -</button>
+            <button class="option-btn" data-option="D" id="optionD">D) -</button>
+          </div>
+
+          <div id="statusMessage" class="status"></div>
+
+          <div class="inline-actions">
+            <button id="nextQuestionBtn" class="btn">Siguiente pregunta</button>
+            <button id="finishBtn" class="btn warn">Finalizar juego</button>
+          </div>
         </div>
       </div>
     </section>
