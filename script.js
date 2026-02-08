@@ -31,6 +31,8 @@ const statusMessage = $("statusMessage");
 const optionButtons = [...document.querySelectorAll(".option-btn")];
 const questionsIntro = $("questionsIntro");
 const questionsContent = $("questionsContent");
+const teamCardA = $("teamCardA");
+const teamCardB = $("teamCardB");
 
 function addParticipantInput(teamKey, value = "") {
   const list = teamKey === "A" ? $("participantsA") : $("participantsB");
@@ -67,9 +69,21 @@ function showScreen(screen) {
 
 function switchCurrentTeam(teamKey) {
   state.currentTeam = teamKey;
-  $("teamCardA").classList.toggle("active-turn", teamKey === "A");
-  $("teamCardB").classList.toggle("active-turn", teamKey === "B");
+  teamCardA.classList.toggle("active-turn", teamKey === "A");
+  teamCardB.classList.toggle("active-turn", teamKey === "B");
   updateQuestionValue();
+}
+
+function triggerImpulse(teamKey) {
+  const card = teamKey === "A" ? teamCardA : teamCardB;
+  card.classList.remove("impulse");
+  void card.offsetWidth;
+  card.classList.add("impulse");
+}
+
+function updateFireEffects() {
+  teamCardA.classList.toggle("on-fire", state.teams.A.streak > 0);
+  teamCardB.classList.toggle("on-fire", state.teams.B.streak > 0);
 }
 
 function updateScoreboard() {
@@ -82,6 +96,7 @@ function updateScoreboard() {
 
   $("playersA").textContent = `Participantes: ${state.teams.A.players.length ? state.teams.A.players.join(", ") : "-"}`;
   $("playersB").textContent = `Participantes: ${state.teams.B.players.length ? state.teams.B.players.join(", ") : "-"}`;
+  updateFireEffects();
 }
 
 function updateQuestionValue() {
@@ -131,6 +146,7 @@ function startGame() {
   switchCurrentTeam("A"); // Inicia forzosamente Equipo A
   resetQuestionArea();
   prepareQuestionFlow();
+updateFireEffects();
   showScreen(gameScreen);
 }
 
@@ -182,6 +198,7 @@ function handleAnswer(selectedOption) {
     const pointsWon = Math.min(activeTeam.streak, 3);
     activeTeam.score += pointsWon;
     rivalTeam.streak = 0;
+    triggerImpulse(active);
     statusMessage.textContent = `✅ Correcto. ${activeTeam.name} gana +${pointsWon} punto(s) y continúa respondiendo.`;
   } else {
     // Si falla, pasa el turno al otro equipo.
@@ -231,3 +248,4 @@ questionTotal.textContent = questions.length;
 addParticipantInput("A", "Jugador 1");
 addParticipantInput("B", "Jugador 1");
 prepareQuestionFlow();
+updateFireEffects();
