@@ -194,8 +194,15 @@ function triggerImpulse(teamKey) {
 }
 
 function updateFireEffects() {
-  teamCardA.classList.toggle("on-fire", state.teams.A.streak > 3);
-  teamCardB.classList.toggle("on-fire", state.teams.B.streak > 3);
+  const aOnFire = state.teams.A.streak > 3;
+  const bOnFire = state.teams.B.streak > 3;
+  const aSuper = state.teams.A.streak > 6;
+  const bSuper = state.teams.B.streak > 6;
+
+  teamCardA.classList.toggle("on-fire", aOnFire);
+  teamCardB.classList.toggle("on-fire", bOnFire);
+  teamCardA.classList.toggle("super-streak", aSuper);
+  teamCardB.classList.toggle("super-streak", bSuper);
 }
 
 function updateScoreboard() {

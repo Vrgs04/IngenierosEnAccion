@@ -160,6 +160,21 @@ input {
 }
 
 
+.team-card.super-streak {
+  border-color: #b08bff;
+  background: linear-gradient(180deg, #4b2a83, #351f68);
+  box-shadow:
+    0 0 0 2px rgba(176, 139, 255, 0.58),
+    0 0 22px rgba(168, 97, 255, 0.52),
+    0 0 44px rgba(148, 84, 255, 0.36);
+}
+
+.team-card.super-streak::before,
+.team-card.super-streak::after {
+  background: linear-gradient(90deg, rgba(185,130,255,0.2), rgba(177,98,255,0.95), rgba(231,180,255,0.6), rgba(146,84,255,0.9), rgba(185,130,255,0.2));
+  filter: blur(1px) drop-shadow(0 0 10px rgba(175, 100, 255, 0.75));
+}
+
 .question-box { display: flex; flex-direction: column; gap: 14px; }
 .question-meta { display: flex; justify-content: space-between; flex-wrap: wrap; color: #c7d6f7; gap: 10px; }
 .question-text { font-size: clamp(1.32rem, 2.4vw, 2rem); line-height: 1.35; min-height: 2.7em; }
