@@ -1,11 +1,114 @@
 // Banco editable de preguntas.
 const questions = [
-  { question: "¿Cuál de estos elementos pertenece al ciclo de vida clásico del software?", options: { A: "Soldadura de PCB", B: "Análisis de requerimientos", C: "Overclock de CPU", D: "Render de animaciones 3D" }, correct: "B" },
-  { question: "En redes, ¿qué dispositivo enruta paquetes entre diferentes redes?", options: { A: "Router", B: "Switch", C: "Hub", D: "Repetidor" }, correct: "A" },
-  { question: "¿Qué estructura almacena pares clave-valor de forma eficiente?", options: { A: "Lista enlazada", B: "Pila", C: "Tabla hash", D: "Cola" }, correct: "C" },
-  { question: "¿Qué unidad se usa para medir potencia eléctrica?", options: { A: "Voltio", B: "Amperio", C: "Ohmio", D: "Vatio" }, correct: "D" },
-  { question: "¿Qué práctica busca detectar errores antes de integrar código al proyecto principal?", options: { A: "Deploy manual sin pruebas", B: "Code review y pruebas", C: "Cambiar contraseñas", D: "Reducir comentarios" }, correct: "B" }
+  // CATEGORÍA 1: CULTURA GENERAL
+  {
+    question: "¿Cuál es el país con más hablantes nativos de español?",
+    options: { A: "España", B: "Argentina", C: "México", D: "Colombia" },
+    correct: "C"
+  },
+  {
+    question: "¿Cuál de estos NO es un continente?",
+    options: { A: "África", B: "Europa", C: "Oceanía", D: "Antártida" },
+    correct: "C"
+  },
+  {
+    question: "¿Qué planeta es conocido como el planeta rojo?",
+    options: { A: "Venus", B: "Marte", C: "Júpiter", D: "Mercurio" },
+    correct: "B"
+  },
+  {
+    question: "¿Cuántos lados tiene un hexágono?",
+    options: { A: "5", B: "6", C: "7", D: "8" },
+    correct: "B"
+  },
+  {
+    question: "¿Quién pintó la Mona Lisa?",
+    options: { A: "Van Gogh", B: "Picasso", C: "Leonardo da Vinci", D: "Miguel Ángel" },
+    correct: "C"
+  },
+
+  // CATEGORÍA 2: CIENCIA Y TECNOLOGÍA
+  {
+    question: "¿Qué significa “Wi-Fi”?",
+    options: { A: "Wireless Fidelity", B: "Wireless Internet", C: "No significa nada específico", D: "World Fiber" },
+    correct: "C"
+  },
+  {
+    question: "¿Cuál es la unidad básica de la información digital?",
+    options: { A: "Byte", B: "Mega", C: "Bit", D: "Pixel" },
+    correct: "C"
+  },
+  {
+    question: "¿Qué dispositivo sirve para almacenar energía?",
+    options: { A: "Router", B: "Batería", C: "CPU", D: "Monitor" },
+    correct: "B"
+  },
+  {
+    question: "¿Cuál de estos NO es un lenguaje de programación?",
+    options: { A: "Python", B: "Java", C: "HTML", D: "C++" },
+    correct: "C"
+  },
+  {
+    question: "¿Qué hace principalmente un sistema operativo?",
+    options: { A: "Navegar en internet", B: "Crear documentos", C: "Administrar recursos del sistema", D: "Guardar archivos en la nube" },
+    correct: "C"
+  },
+
+  // CATEGORÍA 3: CINE Y ENTRETENIMIENTO
+  {
+    question: "¿En qué saga aparece el personaje Darth Vader?",
+    options: { A: "Star Trek", B: "Star Wars", C: "Matrix", D: "Marvel" },
+    correct: "B"
+  },
+  {
+    question: "¿Cuál de estas es una serie de Netflix?",
+    options: { A: "Breaking Bad", B: "Stranger Things", C: "Friends", D: "The Office" },
+    correct: "B"
+  },
+  {
+    question: "¿Qué superhéroe es conocido como “El Hombre Araña”?",
+    options: { A: "Batman", B: "Iron Man", C: "Spider-Man", D: "Hulk" },
+    correct: "C"
+  },
+  {
+    question: "¿Qué película trata sobre sueños dentro de sueños?",
+    options: { A: "Interstellar", B: "Inception", C: "Avatar", D: "Titanic" },
+    correct: "B"
+  },
+  {
+    question: "¿Quién interpreta a Iron Man en el MCU?",
+    options: { A: "Chris Evans", B: "Chris Hemsworth", C: "Robert Downey Jr.", D: "Tom Holland" },
+    correct: "C"
+  },
+
+  // CATEGORÍA 4: LÓGICA Y CURIOSIDADES
+  {
+    question: "Si tienes una vela y la apagas, ¿qué queda?",
+    options: { A: "Cera", B: "Humo", C: "Oscuridad", D: "La vela apagada" },
+    correct: "D"
+  },
+  {
+    question: "¿Qué pesa más?",
+    options: { A: "1 kilo de algodón", B: "1 kilo de hierro", C: "Pesan lo mismo", D: "Depende" },
+    correct: "C"
+  },
+  {
+    question: "¿Cuántos meses tienen 28 días?",
+    options: { A: "1", B: "2", C: "6", D: "Todos" },
+    correct: "D"
+  },
+  {
+    question: "¿Qué número sigue en la serie: 2, 4, 8, 16…?",
+    options: { A: "18", B: "24", C: "32", D: "64" },
+    correct: "C"
+  },
+  {
+    question: "Si todos los cisnes que has visto son blancos, eso significa que…",
+    options: { A: "Todos los cisnes son blancos", B: "Nunca hay cisnes negros", C: "No has visto un cisne negro", D: "Los cisnes no existen" },
+    correct: "C"
+  }
 ];
+
 
 const state = {
   teams: {
