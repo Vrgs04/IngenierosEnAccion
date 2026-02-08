@@ -9,7 +9,7 @@ const questions = [
   {
     question: "¿Cuál de estos NO es un continente?",
     options: { A: "África", B: "Europa", C: "Oceanía", D: "Antártida" },
-    correct: "C"
+    correct: "D"
   },
   {
     question: "¿Qué planeta es conocido como el planeta rojo?",
