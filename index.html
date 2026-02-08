@@ -1,209 +1,140 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Ingenieros en Acción – Duelo</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
-    }
-
-    h1 {
-      margin-bottom: 10px;
-    }
-
-    .scoreboard {
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 20px;
-    }
-
-    .team {
-      background: #1e293b;
-      padding: 15px;
-      border-radius: 10px;
-      width: 40%;
-    }
-
-    .question-box {
-      background: #020617;
-      padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-    }
-
-    .options {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    button {
-      padding: 15px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      background: #334155;
-      color: white;
-    }
-
-    button:hover {
-      background: #475569;
-    }
-
-    .controls {
-      margin-top: 20px;
-    }
-
-    .info {
-      margin-top: 10px;
-      font-size: 14px;
-      opacity: 0.8;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ingenieros en acción – Duelo de Respuesta</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <main class="app">
+    <section id="startScreen" class="screen active">
+      <div class="card glow-card floating">
+        <h1>Ingenieros en acción</h1>
+        <p class="subtitle">Duelo de Respuesta</p>
+      </div>
 
-  <h1>⚙️ Ingenieros en Acción</h1>
-  <p>Duelo de Respuesta</p>
+      <div class="card">
+        <h2>Configurar equipos</h2>
+        <p class="subtitle">Edita nombres y participantes antes de iniciar.</p>
 
-  <div class="scoreboard">
-    <div class="team">
-      <h2>Equipo A</h2>
-      <p>Puntos: <span id="scoreA">0</span></p>
-      <p>Racha: <span id="streakA">0</span></p>
-    </div>
+        <div class="team-setup-grid">
+          <article class="team-setup">
+            <label for="teamAInput">Nombre del equipo A</label>
+            <input id="teamAInput" type="text" value="Equipo A" maxlength="30" />
+            <div class="participants-header">
+              <span>Participantes</span>
+              <button class="btn small secondary" id="addParticipantA" type="button">+ Agregar</button>
+            </div>
+            <div id="participantsA" class="participants-list"></div>
+          </article>
 
-    <div class="team">
-      <h2>Equipo B</h2>
-      <p>Puntos: <span id="scoreB">0</span></p>
-      <p>Racha: <span id="streakB">0</span></p>
-    </div>
-  </div>
+          <article class="team-setup">
+            <label for="teamBInput">Nombre del equipo B</label>
+            <input id="teamBInput" type="text" value="Equipo B" maxlength="30" />
+            <div class="participants-header">
+              <span>Participantes</span>
+              <button class="btn small secondary" id="addParticipantB" type="button">+ Agregar</button>
+            </div>
+            <div id="participantsB" class="participants-list"></div>
+          </article>
+        </div>
 
-  <div class="question-box">
-    <h2 id="question">Presiona "Siguiente pregunta"</h2>
+        <div class="center mt-20">
+          <button id="startGameBtn" class="btn">Iniciar juego</button>
+        </div>
+      </div>
+    </section>
 
-    <div class="options">
-      <button onclick="answer('A')">A</button>
-      <button onclick="answer('B')">B</button>
-      <button onclick="answer('C')">C</button>
-      <button onclick="answer('D')">D</button>
-    </div>
-  </div>
+    <section id="gameScreen" class="screen">
+      <div class="card">
+        <h2>Marcador</h2>
+        <div class="scoreboard">
+          <article id="teamCardA" class="team-card">
+            <div id="teamNameA" class="team-name">Equipo A</div>
+            <div id="playersA" class="players-preview">Participantes: -</div>
+            <div class="team-stats">
+              <span>Puntaje: <strong id="scoreA">0</strong></span>
+              <span>Racha: <strong id="streakA">0</strong></span>
+            </div>
+          </article>
 
-  <div class="controls">
-    <button onclick="nextQuestion()">➡️ Siguiente pregunta</button>
-  </div>
+          <article id="teamCardB" class="team-card">
+            <div id="teamNameB" class="team-name">Equipo B</div>
+            <div id="playersB" class="players-preview">Participantes: -</div>
+            <div class="team-stats">
+              <span>Puntaje: <strong id="scoreB">0</strong></span>
+              <span>Racha: <strong id="streakB">0</strong></span>
+            </div>
+          </article>
+        </div>
+      </div>
 
-  <div class="info" id="info"></div>
+      <div class="card question-box">
+        <div id="questionsIntro" class="questions-intro center-col">
+          <p class="subtitle">Cuando estén listos, inicia la ronda de preguntas.</p>
+          <button id="startQuestionsBtn" class="btn">Iniciar con las preguntas</button>
+        </div>
 
-  <script>
-    const questions = [
-      {
-        q: "¿Cuál es un componente fundamental de un juego digital?",
-        correct: "B",
-        options: {
-          A: "Monitor",
-          B: "Motor de juego",
-          C: "Mouse",
-          D: "Teclado"
-        }
-      },
-      {
-        q: "¿Qué elemento define las reglas del juego?",
-        correct: "C",
-        options: {
-          A: "Gráficos",
-          B: "Sonido",
-          C: "Mecánicas",
-          D: "Control"
-        }
-      },
-      {
-        q: "¿Qué componente muestra información al jugador?",
-        correct: "A",
-        options: {
-          A: "Interfaz",
-          B: "Motor físico",
-          C: "Código",
-          D: "Narrativa"
-        }
-      }
-    ];
+        <div id="questionsContent" class="hidden">
+          <div class="question-meta">
+            <span>Pregunta <strong id="questionIndex">0</strong>/<strong id="questionTotal">0</strong></span>
+            <span>Valor actual: <strong id="questionValue">+1</strong> punto(s)</span>
+          </div>
+          <div id="questionText" class="question-text">Presiona “Siguiente pregunta” para comenzar.</div>
 
-    let current = -1;
-    let turn = "A";
+          <div class="options">
+            <button class="option-btn" data-option="A" id="optionA">A) -</button>
+            <button class="option-btn" data-option="B" id="optionB">B) -</button>
+            <button class="option-btn" data-option="C" id="optionC">C) -</button>
+            <button class="option-btn" data-option="D" id="optionD">D) -</button>
+          </div>
 
-    let scoreA = 0, scoreB = 0;
-    let streakA = 0, streakB = 0;
+          <div id="statusMessage" class="status"></div>
 
-    function nextQuestion() {
-      current++;
-      if (current >= questions.length) {
-        document.getElementById("question").innerText = "Juego terminado";
-        return;
-      }
+          <div class="inline-actions">
+            <button id="nextQuestionBtn" class="btn">Siguiente pregunta</button>
+            <button id="finishBtn" class="btn warn">Finalizar juego</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-      const q = questions[current];
-      document.getElementById("question").innerText =
-        q.q + "\n\nA) " + q.options.A +
-        "\nB) " + q.options.B +
-        "\nC) " + q.options.C +
-        "\nD) " + q.options.D;
+    <section id="finalScreen" class="screen final-screen">
+      <div class="winner-stage card glow-card">
+        <div class="trophy">🏆</div>
+        <h2 id="winnerName" class="winner-name">Ganador</h2>
+        <p class="subtitle">Equipo con más puntos</p>
+      </div>
 
-      document.getElementById("info").innerText =
-        "Turno actual: Equipo " + turn;
-    }
+      <div class="podium card">
+        <div class="podium-grid">
+          <article class="podium-step second">
+            <span class="medal">🥈</span>
+            <h3 id="runnerUpName">Equipo 2</h3>
+            <p>Puntos: <strong id="runnerUpScore">0</strong></p>
+          </article>
 
-    function answer(letter) {
-      if (current < 0) return;
+          <article class="podium-step first">
+            <span class="medal">🥇</span>
+            <h3 id="championName">Equipo 1</h3>
+            <p>Puntos: <strong id="championScore">0</strong></p>
+          </article>
 
-      const q = questions[current];
-      const isCorrect = letter === q.correct;
+          <article class="podium-step third">
+            <span class="medal">🎖️</span>
+            <h3 id="thirdName">-</h3>
+            <p id="thirdInfo">Sin tercer puesto (duelo 1 vs 1)</p>
+          </article>
+        </div>
 
-      if (turn === "A") {
-        if (isCorrect) {
-          streakA++;
-          scoreA += streakA;
-          streakB = 0;
-        } else {
-          scoreA = Math.max(0, scoreA - 1);
-          streakA = 0;
-        }
-        turn = "B";
-      } else {
-        if (isCorrect) {
-          streakB++;
-          scoreB += streakB;
-          streakA = 0;
-        } else {
-          scoreB = Math.max(0, scoreB - 1);
-          streakB = 0;
-        }
-        turn = "A";
-      }
+        <div class="center mt-20">
+          <button id="restartBtn" class="btn">Reiniciar juego</button>
+        </div>
+      </div>
+    </section>
+  </main>
 
-      updateUI(isCorrect);
-    }
-
-    function updateUI(correct) {
-      document.getElementById("scoreA").innerText = scoreA;
-      document.getElementById("scoreB").innerText = scoreB;
-      document.getElementById("streakA").innerText = streakA;
-      document.getElementById("streakB").innerText = streakB;
-
-      document.getElementById("info").innerText =
-        correct ? "✅ Respuesta correcta" : "❌ Respuesta incorrecta";
-    }
-  </script>
-
+  <script src="script.js"></script>
 </body>
 </html>
