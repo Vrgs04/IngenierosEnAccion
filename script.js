@@ -136,6 +136,7 @@ const questionsIntro = $("questionsIntro");
 const questionsContent = $("questionsContent");
 const teamCardA = $("teamCardA");
 const teamCardB = $("teamCardB");
+const confettiLayer = $("confettiLayer");
 
 function shuffleArray(arr) {
   const copy = [...arr];
@@ -144,6 +145,28 @@ function shuffleArray(arr) {
     [copy[i], copy[j]] = [copy[j], copy[i]];
   }
   return copy;
+}
+
+
+function launchConfetti() {
+  if (!confettiLayer) return;
+  confettiLayer.innerHTML = "";
+  const colors = ["#ffd166", "#ef476f", "#06d6a0", "#118ab2", "#a56bff", "#ffffff"];
+
+  for (let i = 0; i < 120; i += 1) {
+    const piece = document.createElement("span");
+    piece.className = "confetti-piece";
+    piece.style.left = `${Math.random() * 100}%`;
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDuration = `${3 + Math.random() * 2.8}s`;
+    piece.style.animationDelay = `${Math.random() * 0.8}s`;
+    piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+    confettiLayer.appendChild(piece);
+  }
+
+  setTimeout(() => {
+    confettiLayer.innerHTML = "";
+  }, 6500);
 }
 
 function addParticipantInput(teamKey, value = "") {
@@ -349,6 +372,7 @@ function endGame() {
   $("runnerUpScore").textContent = second.score;
 
   showScreen(finalScreen);
+  launchConfetti();
 }
 
 function resetToStart() {
