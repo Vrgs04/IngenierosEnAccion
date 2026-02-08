@@ -82,8 +82,8 @@ function triggerImpulse(teamKey) {
 }
 
 function updateFireEffects() {
-  teamCardA.classList.toggle("on-fire", state.teams.A.streak > 0);
-  teamCardB.classList.toggle("on-fire", state.teams.B.streak > 0);
+  teamCardA.classList.toggle("on-fire", state.teams.A.streak > 3);
+  teamCardB.classList.toggle("on-fire", state.teams.B.streak > 3);
 }
 
 function updateScoreboard() {
