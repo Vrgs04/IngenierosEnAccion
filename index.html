@@ -1,209 +1,624 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Ingenieros en Acción – Duelo</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ingenieros en acción – Duelo de Respuesta</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
+    :root {
+      --bg: #0b1220;
+      --panel: #121c2f;
+      --panel-soft: #17233a;
+      --text: #ecf1ff;
+      --muted: #a8b6d6;
+      --accent: #4f8cff;
+      --accent-2: #39d0a0;
+      --danger: #ff5e73;
+      --border: #2a3a5d;
+      --active: #23457f;
+      --correct: #214a39;
+      --wrong: #4a2323;
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
-      padding: 20px;
-      text-align: center;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at top, #101d33, var(--bg) 60%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .screen {
+      display: none;
+      gap: 24px;
+      flex-direction: column;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    .card {
+      background: linear-gradient(180deg, var(--panel), var(--panel-soft));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
     }
 
     h1 {
-      margin-bottom: 10px;
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      margin-bottom: 12px;
+    }
+
+    p, label, .meta, .status {
+      font-size: clamp(1rem, 1.6vw, 1.3rem);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      text-align: center;
+      font-size: clamp(1rem, 1.7vw, 1.25rem);
+    }
+
+    .team-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      font-size: 1.1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #0c1528;
+      color: var(--text);
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.2s ease;
+      color: white;
+      background: var(--accent);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.08);
+    }
+
+    .btn.secondary {
+      background: #32476f;
+    }
+
+    .btn.warn {
+      background: var(--danger);
     }
 
     .scoreboard {
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
     }
 
-    .team {
-      background: #1e293b;
-      padding: 15px;
-      border-radius: 10px;
-      width: 40%;
+    .team-card {
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      background: #0f1a2f;
+    }
+
+    .team-card.active-turn {
+      border-color: var(--accent-2);
+      background: var(--active);
+      box-shadow: 0 0 0 2px rgba(57, 208, 160, 0.25);
+    }
+
+    .team-name {
+      font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .team-stats {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: clamp(1rem, 1.8vw, 1.3rem);
+      color: #d7e2ff;
+    }
+
+    .turn-switcher {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
     }
 
     .question-box {
-      background: #020617;
-      padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .question-meta {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: #c5d2f0;
+    }
+
+    .question-text {
+      font-size: clamp(1.3rem, 2.4vw, 2rem);
+      line-height: 1.35;
     }
 
     .options {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 15px;
+      gap: 12px;
     }
 
-    button {
-      padding: 15px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
+    .option-btn {
+      text-align: left;
+      min-height: 86px;
+      padding: 14px;
+      background: #1a2742;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: clamp(1rem, 1.6vw, 1.2rem);
       cursor: pointer;
-      background: #334155;
-      color: white;
     }
 
-    button:hover {
-      background: #475569;
+    .option-btn.correct {
+      background: var(--correct);
+      border-color: #3ba36c;
     }
 
-    .controls {
-      margin-top: 20px;
+    .option-btn.wrong {
+      background: var(--wrong);
+      border-color: #b95151;
     }
 
-    .info {
-      margin-top: 10px;
-      font-size: 14px;
-      opacity: 0.8;
+    .status {
+      font-weight: 700;
+      min-height: 1.5em;
+    }
+
+    .final-title {
+      text-align: center;
+      color: var(--accent-2);
+      font-size: clamp(1.7rem, 3.2vw, 2.6rem);
+      margin-bottom: 6px;
+    }
+
+    .final-results {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 860px) {
+      .team-form,
+      .scoreboard,
+      .options,
+      .final-results {
+        grid-template-columns: 1fr;
+      }
+
+      body {
+        padding: 16px;
+      }
     }
   </style>
 </head>
 <body>
+  <main class="app">
+    <!-- Pantalla inicial -->
+    <section id="startScreen" class="screen active">
+      <div class="card">
+        <h1>Ingenieros en acción</h1>
+        <p class="subtitle">Duelo de Respuesta</p>
+      </div>
 
-  <h1>⚙️ Ingenieros en Acción</h1>
-  <p>Duelo de Respuesta</p>
+      <div class="card">
+        <h2>Configurar equipos</h2>
+        <p class="subtitle">Edita los nombres y luego inicia el juego.</p>
+        <div class="team-form">
+          <div class="field">
+            <label for="teamAInput">Nombre equipo A</label>
+            <input id="teamAInput" type="text" value="Equipo A" maxlength="30" />
+          </div>
+          <div class="field">
+            <label for="teamBInput">Nombre equipo B</label>
+            <input id="teamBInput" type="text" value="Equipo B" maxlength="30" />
+          </div>
+        </div>
+        <div style="margin-top:18px; display:flex; justify-content:center;">
+          <button id="startGameBtn" class="btn">Iniciar juego</button>
+        </div>
+      </div>
+    </section>
 
-  <div class="scoreboard">
-    <div class="team">
-      <h2>Equipo A</h2>
-      <p>Puntos: <span id="scoreA">0</span></p>
-      <p>Racha: <span id="streakA">0</span></p>
-    </div>
+    <!-- Pantalla de juego -->
+    <section id="gameScreen" class="screen">
+      <div class="card">
+        <h2>Marcador</h2>
+        <div class="scoreboard">
+          <article id="teamCardA" class="team-card">
+            <div id="teamNameA" class="team-name">Equipo A</div>
+            <div class="team-stats">
+              <span>Puntaje: <strong id="scoreA">0</strong></span>
+              <span>Racha: <strong id="streakA">0</strong></span>
+            </div>
+          </article>
+          <article id="teamCardB" class="team-card">
+            <div id="teamNameB" class="team-name">Equipo B</div>
+            <div class="team-stats">
+              <span>Puntaje: <strong id="scoreB">0</strong></span>
+              <span>Racha: <strong id="streakB">0</strong></span>
+            </div>
+          </article>
+        </div>
+      </div>
 
-    <div class="team">
-      <h2>Equipo B</h2>
-      <p>Puntos: <span id="scoreB">0</span></p>
-      <p>Racha: <span id="streakB">0</span></p>
-    </div>
-  </div>
+      <div class="card">
+        <div class="turn-switcher">
+          <span><strong>Equipo respondiendo:</strong> <span id="currentTeamLabel">Equipo A</span></span>
+          <button id="switchToA" class="btn secondary">Responde Equipo A</button>
+          <button id="switchToB" class="btn secondary">Responde Equipo B</button>
+        </div>
+      </div>
 
-  <div class="question-box">
-    <h2 id="question">Presiona "Siguiente pregunta"</h2>
+      <div class="card question-box">
+        <div class="question-meta">
+          <span>Pregunta <strong id="questionIndex">0</strong>/<strong id="questionTotal">0</strong></span>
+          <span>Valor actual: <strong id="questionValue">+1</strong> punto(s)</span>
+        </div>
+        <div id="questionText" class="question-text">Presiona “Siguiente pregunta” para comenzar.</div>
 
-    <div class="options">
-      <button onclick="answer('A')">A</button>
-      <button onclick="answer('B')">B</button>
-      <button onclick="answer('C')">C</button>
-      <button onclick="answer('D')">D</button>
-    </div>
-  </div>
+        <div class="options">
+          <button class="option-btn" data-option="A" id="optionA">A) -</button>
+          <button class="option-btn" data-option="B" id="optionB">B) -</button>
+          <button class="option-btn" data-option="C" id="optionC">C) -</button>
+          <button class="option-btn" data-option="D" id="optionD">D) -</button>
+        </div>
 
-  <div class="controls">
-    <button onclick="nextQuestion()">➡️ Siguiente pregunta</button>
-  </div>
+        <div id="statusMessage" class="status"></div>
 
-  <div class="info" id="info"></div>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <button id="nextQuestionBtn" class="btn">Siguiente pregunta</button>
+          <button id="finishBtn" class="btn warn">Finalizar juego</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pantalla final -->
+    <section id="finalScreen" class="screen">
+      <div class="card">
+        <h2 class="final-title">Equipo ganador: <span id="winnerName">-</span></h2>
+        <p class="subtitle">Puntaje final del duelo</p>
+      </div>
+
+      <div class="card">
+        <div class="final-results">
+          <article class="team-card">
+            <div id="finalTeamAName" class="team-name">Equipo A</div>
+            <div class="team-stats">
+              <span>Puntaje: <strong id="finalScoreA">0</strong></span>
+              <span>Racha final: <strong id="finalStreakA">0</strong></span>
+            </div>
+          </article>
+          <article class="team-card">
+            <div id="finalTeamBName" class="team-name">Equipo B</div>
+            <div class="team-stats">
+              <span>Puntaje: <strong id="finalScoreB">0</strong></span>
+              <span>Racha final: <strong id="finalStreakB">0</strong></span>
+            </div>
+          </article>
+        </div>
+
+        <div style="margin-top:18px; display:flex; justify-content:center;">
+          <button id="restartBtn" class="btn">Reiniciar juego</button>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <script>
+    // Banco editable de preguntas.
     const questions = [
       {
-        q: "¿Cuál es un componente fundamental de un juego digital?",
-        correct: "B",
+        question: "¿Cuál de estos elementos pertenece al ciclo de vida clásico del software?",
         options: {
-          A: "Monitor",
-          B: "Motor de juego",
-          C: "Mouse",
-          D: "Teclado"
-        }
+          A: "Soldadura de PCB",
+          B: "Análisis de requerimientos",
+          C: "Overclock de CPU",
+          D: "Render de animaciones 3D"
+        },
+        correct: "B"
       },
       {
-        q: "¿Qué elemento define las reglas del juego?",
-        correct: "C",
+        question: "En redes, ¿qué dispositivo enruta paquetes entre diferentes redes?",
         options: {
-          A: "Gráficos",
-          B: "Sonido",
-          C: "Mecánicas",
-          D: "Control"
-        }
+          A: "Router",
+          B: "Switch",
+          C: "Hub",
+          D: "Repetidor"
+        },
+        correct: "A"
       },
       {
-        q: "¿Qué componente muestra información al jugador?",
-        correct: "A",
+        question: "¿Qué estructura almacena pares clave-valor de forma eficiente?",
         options: {
-          A: "Interfaz",
-          B: "Motor físico",
-          C: "Código",
-          D: "Narrativa"
-        }
+          A: "Lista enlazada",
+          B: "Pila",
+          C: "Tabla hash",
+          D: "Cola"
+        },
+        correct: "C"
+      },
+      {
+        question: "¿Qué unidad se usa para medir potencia eléctrica?",
+        options: {
+          A: "Voltio",
+          B: "Amperio",
+          C: "Ohmio",
+          D: "Vatio"
+        },
+        correct: "D"
+      },
+      {
+        question: "¿Qué práctica busca detectar errores antes de integrar código al proyecto principal?",
+        options: {
+          A: "Deploy manual sin pruebas",
+          B: "Code review y pruebas",
+          C: "Cambiar contraseñas",
+          D: "Reducir comentarios"
+        },
+        correct: "B"
       }
     ];
 
-    let current = -1;
-    let turn = "A";
+    const state = {
+      teams: {
+        A: { name: "Equipo A", score: 0, streak: 0 },
+        B: { name: "Equipo B", score: 0, streak: 0 }
+      },
+      currentTeam: "A",
+      currentQuestionIndex: -1,
+      answeredCurrentQuestion: false
+    };
 
-    let scoreA = 0, scoreB = 0;
-    let streakA = 0, streakB = 0;
+    const startScreen = document.getElementById("startScreen");
+    const gameScreen = document.getElementById("gameScreen");
+    const finalScreen = document.getElementById("finalScreen");
 
-    function nextQuestion() {
-      current++;
-      if (current >= questions.length) {
-        document.getElementById("question").innerText = "Juego terminado";
+    const teamAInput = document.getElementById("teamAInput");
+    const teamBInput = document.getElementById("teamBInput");
+
+    const teamNameA = document.getElementById("teamNameA");
+    const teamNameB = document.getElementById("teamNameB");
+    const scoreA = document.getElementById("scoreA");
+    const scoreB = document.getElementById("scoreB");
+    const streakA = document.getElementById("streakA");
+    const streakB = document.getElementById("streakB");
+    const teamCardA = document.getElementById("teamCardA");
+    const teamCardB = document.getElementById("teamCardB");
+    const currentTeamLabel = document.getElementById("currentTeamLabel");
+
+    const questionIndex = document.getElementById("questionIndex");
+    const questionTotal = document.getElementById("questionTotal");
+    const questionValue = document.getElementById("questionValue");
+    const questionText = document.getElementById("questionText");
+    const statusMessage = document.getElementById("statusMessage");
+    const optionButtons = [...document.querySelectorAll(".option-btn")];
+
+    const finalTeamAName = document.getElementById("finalTeamAName");
+    const finalTeamBName = document.getElementById("finalTeamBName");
+    const finalScoreA = document.getElementById("finalScoreA");
+    const finalScoreB = document.getElementById("finalScoreB");
+    const finalStreakA = document.getElementById("finalStreakA");
+    const finalStreakB = document.getElementById("finalStreakB");
+    const winnerName = document.getElementById("winnerName");
+
+    document.getElementById("startGameBtn").addEventListener("click", startGame);
+    document.getElementById("nextQuestionBtn").addEventListener("click", goToNextQuestion);
+    document.getElementById("finishBtn").addEventListener("click", endGame);
+    document.getElementById("restartBtn").addEventListener("click", resetToStart);
+    document.getElementById("switchToA").addEventListener("click", () => switchCurrentTeam("A"));
+    document.getElementById("switchToB").addEventListener("click", () => switchCurrentTeam("B"));
+
+    optionButtons.forEach((btn) => {
+      btn.addEventListener("click", () => handleAnswer(btn.dataset.option));
+    });
+
+    questionTotal.textContent = questions.length;
+
+    function showScreen(screenElement) {
+      [startScreen, gameScreen, finalScreen].forEach((screen) => screen.classList.remove("active"));
+      screenElement.classList.add("active");
+    }
+
+    function startGame() {
+      state.teams.A.name = teamAInput.value.trim() || "Equipo A";
+      state.teams.B.name = teamBInput.value.trim() || "Equipo B";
+      state.teams.A.score = 0;
+      state.teams.B.score = 0;
+      state.teams.A.streak = 0;
+      state.teams.B.streak = 0;
+      state.currentTeam = "A";
+      state.currentQuestionIndex = -1;
+      state.answeredCurrentQuestion = false;
+
+      updateScoreboard();
+      updateCurrentTeamUI();
+      resetQuestionArea();
+      showScreen(gameScreen);
+    }
+
+    function switchCurrentTeam(teamKey) {
+      state.currentTeam = teamKey;
+      updateCurrentTeamUI();
+      updateQuestionValue();
+    }
+
+    function resetQuestionArea() {
+      questionIndex.textContent = "0";
+      questionText.textContent = "Presiona “Siguiente pregunta” para comenzar.";
+      statusMessage.textContent = "";
+      optionButtons.forEach((btn) => {
+        btn.textContent = `${btn.dataset.option}) -`;
+        btn.classList.remove("correct", "wrong");
+      });
+      updateQuestionValue();
+    }
+
+    function updateCurrentTeamUI() {
+      currentTeamLabel.textContent = state.teams[state.currentTeam].name;
+      teamCardA.classList.toggle("active-turn", state.currentTeam === "A");
+      teamCardB.classList.toggle("active-turn", state.currentTeam === "B");
+    }
+
+    function updateScoreboard() {
+      teamNameA.textContent = state.teams.A.name;
+      teamNameB.textContent = state.teams.B.name;
+      scoreA.textContent = state.teams.A.score;
+      scoreB.textContent = state.teams.B.score;
+      streakA.textContent = state.teams.A.streak;
+      streakB.textContent = state.teams.B.streak;
+    }
+
+    function updateQuestionValue() {
+      const current = state.teams[state.currentTeam];
+      const value = Math.min(current.streak + 1, 3);
+      questionValue.textContent = `+${value}`;
+    }
+
+    function goToNextQuestion() {
+      if (state.currentQuestionIndex >= questions.length - 1) {
+        endGame();
         return;
       }
 
-      const q = questions[current];
-      document.getElementById("question").innerText =
-        q.q + "\n\nA) " + q.options.A +
-        "\nB) " + q.options.B +
-        "\nC) " + q.options.C +
-        "\nD) " + q.options.D;
+      state.currentQuestionIndex += 1;
+      state.answeredCurrentQuestion = false;
+      statusMessage.textContent = "";
 
-      document.getElementById("info").innerText =
-        "Turno actual: Equipo " + turn;
+      const question = questions[state.currentQuestionIndex];
+      questionIndex.textContent = String(state.currentQuestionIndex + 1);
+      questionText.textContent = question.question;
+
+      optionButtons.forEach((btn) => {
+        const letter = btn.dataset.option;
+        btn.classList.remove("correct", "wrong");
+        btn.textContent = `${letter}) ${question.options[letter]}`;
+      });
+
+      updateQuestionValue();
     }
 
-    function answer(letter) {
-      if (current < 0) return;
+    function handleAnswer(selectedOption) {
+      if (state.currentQuestionIndex < 0 || state.currentQuestionIndex >= questions.length) return;
+      if (state.answeredCurrentQuestion) return;
 
-      const q = questions[current];
-      const isCorrect = letter === q.correct;
+      state.answeredCurrentQuestion = true;
 
-      if (turn === "A") {
-        if (isCorrect) {
-          streakA++;
-          scoreA += streakA;
-          streakB = 0;
-        } else {
-          scoreA = Math.max(0, scoreA - 1);
-          streakA = 0;
+      const question = questions[state.currentQuestionIndex];
+      const activeTeamKey = state.currentTeam;
+      const enemyTeamKey = activeTeamKey === "A" ? "B" : "A";
+      const activeTeam = state.teams[activeTeamKey];
+      const enemyTeam = state.teams[enemyTeamKey];
+      const isCorrect = selectedOption === question.correct;
+
+      optionButtons.forEach((btn) => {
+        const letter = btn.dataset.option;
+        btn.classList.remove("correct", "wrong");
+        if (letter === question.correct) {
+          btn.classList.add("correct");
         }
-        turn = "B";
+        if (letter === selectedOption && !isCorrect) {
+          btn.classList.add("wrong");
+        }
+      });
+
+      if (isCorrect) {
+        // Si acierta: aumenta su racha (tope visual de +3 por regla), suma según racha y reinicia la rival.
+        activeTeam.streak += 1;
+        const pointsWon = Math.min(activeTeam.streak, 3);
+        activeTeam.score += pointsWon;
+        enemyTeam.streak = 0;
+        statusMessage.textContent = `✅ Correcto. ${activeTeam.name} gana +${pointsWon} punto(s).`;
       } else {
-        if (isCorrect) {
-          streakB++;
-          scoreB += streakB;
-          streakA = 0;
+        // Si falla teniendo racha: pierde 1 punto y su racha se reinicia.
+        if (activeTeam.streak > 0) {
+          activeTeam.score -= 1;
+          statusMessage.textContent = `❌ Incorrecto. ${activeTeam.name} pierde 1 punto y reinicia su racha.`;
         } else {
-          scoreB = Math.max(0, scoreB - 1);
-          streakB = 0;
+          statusMessage.textContent = `❌ Incorrecto. ${activeTeam.name} no tenía racha activa.`;
         }
-        turn = "A";
+        activeTeam.streak = 0;
       }
 
-      updateUI(isCorrect);
+      updateScoreboard();
+      updateQuestionValue();
     }
 
-    function updateUI(correct) {
-      document.getElementById("scoreA").innerText = scoreA;
-      document.getElementById("scoreB").innerText = scoreB;
-      document.getElementById("streakA").innerText = streakA;
-      document.getElementById("streakB").innerText = streakB;
+    function endGame() {
+      finalTeamAName.textContent = state.teams.A.name;
+      finalTeamBName.textContent = state.teams.B.name;
+      finalScoreA.textContent = state.teams.A.score;
+      finalScoreB.textContent = state.teams.B.score;
+      finalStreakA.textContent = state.teams.A.streak;
+      finalStreakB.textContent = state.teams.B.streak;
 
-      document.getElementById("info").innerText =
-        correct ? "✅ Respuesta correcta" : "❌ Respuesta incorrecta";
+      if (state.teams.A.score > state.teams.B.score) {
+        winnerName.textContent = state.teams.A.name;
+      } else if (state.teams.B.score > state.teams.A.score) {
+        winnerName.textContent = state.teams.B.name;
+      } else {
+        winnerName.textContent = "Empate";
+      }
+
+      showScreen(finalScreen);
+    }
+
+    function resetToStart() {
+      showScreen(startScreen);
     }
   </script>
-
 </body>
 </html>
