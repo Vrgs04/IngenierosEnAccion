@@ -107,8 +107,9 @@ function prepareQuestionFlow() {
 }
 
 function startQuestionsFlow() {
+  if (state.questionsStarted) return;
   state.questionsStarted = true;
-  questionsIntro.classList.add("hidden");
+  questionsIntro.remove();
   questionsContent.classList.remove("hidden");
   goToNextQuestion();
 }
@@ -127,7 +128,7 @@ function startGame() {
   state.answeredCurrentQuestion = false;
 
   updateScoreboard();
-  switchCurrentTeam("A");
+  switchCurrentTeam("A"); // Inicia forzosamente Equipo A
   resetQuestionArea();
   prepareQuestionFlow();
   showScreen(gameScreen);
@@ -176,19 +177,22 @@ function handleAnswer(selectedOption) {
   });
 
   if (isCorrect) {
+    // Si acierta, el mismo equipo sigue respondiendo.
     activeTeam.streak += 1;
     const pointsWon = Math.min(activeTeam.streak, 3);
     activeTeam.score += pointsWon;
     rivalTeam.streak = 0;
-    statusMessage.textContent = `✅ Correcto. ${activeTeam.name} gana +${pointsWon} punto(s).`;
+    statusMessage.textContent = `✅ Correcto. ${activeTeam.name} gana +${pointsWon} punto(s) y continúa respondiendo.`;
   } else {
+    // Si falla, pasa el turno al otro equipo.
     if (activeTeam.streak > 0) {
       activeTeam.score -= 1;
-      statusMessage.textContent = `❌ Incorrecto. ${activeTeam.name} pierde 1 punto y reinicia racha.`;
+      statusMessage.textContent = `❌ Incorrecto. ${activeTeam.name} pierde 1 punto, reinicia racha y responde ${rivalTeam.name}.`;
     } else {
-      statusMessage.textContent = `❌ Incorrecto. ${activeTeam.name} no tenía racha activa.`;
+      statusMessage.textContent = `❌ Incorrecto. ${activeTeam.name} falla y responde ${rivalTeam.name}.`;
     }
     activeTeam.streak = 0;
+    switchCurrentTeam(rival);
   }
 
   updateScoreboard();
@@ -210,7 +214,7 @@ function endGame() {
 }
 
 function resetToStart() {
-  showScreen(startScreen);
+  window.location.reload();
 }
 
 $("addParticipantA").addEventListener("click", () => addParticipantInput("A"));
@@ -220,11 +224,6 @@ $("startQuestionsBtn").addEventListener("click", startQuestionsFlow);
 $("nextQuestionBtn").addEventListener("click", goToNextQuestion);
 $("finishBtn").addEventListener("click", endGame);
 $("restartBtn").addEventListener("click", resetToStart);
-
-$("teamCardA").addEventListener("click", () => switchCurrentTeam("A"));
-$("teamCardB").addEventListener("click", () => switchCurrentTeam("B"));
-$("teamCardA").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") switchCurrentTeam("A"); });
-$("teamCardB").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") switchCurrentTeam("B"); });
 
 optionButtons.forEach((btn) => btn.addEventListener("click", () => handleAnswer(btn.dataset.option)));
 
