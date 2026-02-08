@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ingenieros en Acción – Duelo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .scoreboard {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+
+    .team {
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 10px;
+      width: 40%;
+    }
+
+    .question-box {
+      background: #020617;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    button {
+      padding: 15px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: #334155;
+      color: white;
+    }
+
+    button:hover {
+      background: #475569;
+    }
+
+    .controls {
+      margin-top: 20px;
+    }
+
+    .info {
+      margin-top: 10px;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>⚙️ Ingenieros en Acción</h1>
+  <p>Duelo de Respuesta</p>
+
+  <div class="scoreboard">
+    <div class="team">
+      <h2>Equipo A</h2>
+      <p>Puntos: <span id="scoreA">0</span></p>
+      <p>Racha: <span id="streakA">0</span></p>
+    </div>
+
+    <div class="team">
+      <h2>Equipo B</h2>
+      <p>Puntos: <span id="scoreB">0</span></p>
+      <p>Racha: <span id="streakB">0</span></p>
+    </div>
+  </div>
+
+  <div class="question-box">
+    <h2 id="question">Presiona "Siguiente pregunta"</h2>
+
+    <div class="options">
+      <button onclick="answer('A')">A</button>
+      <button onclick="answer('B')">B</button>
+      <button onclick="answer('C')">C</button>
+      <button onclick="answer('D')">D</button>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button onclick="nextQuestion()">➡️ Siguiente pregunta</button>
+  </div>
+
+  <div class="info" id="info"></div>
+
+  <script>
+    const questions = [
+      {
+        q: "¿Cuál es un componente fundamental de un juego digital?",
+        correct: "B",
+        options: {
+          A: "Monitor",
+          B: "Motor de juego",
+          C: "Mouse",
+          D: "Teclado"
+        }
+      },
+      {
+        q: "¿Qué elemento define las reglas del juego?",
+        correct: "C",
+        options: {
+          A: "Gráficos",
+          B: "Sonido",
+          C: "Mecánicas",
+          D: "Control"
+        }
+      },
+      {
+        q: "¿Qué componente muestra información al jugador?",
+        correct: "A",
+        options: {
+          A: "Interfaz",
+          B: "Motor físico",
+          C: "Código",
+          D: "Narrativa"
+        }
+      }
+    ];
+
+    let current = -1;
+    let turn = "A";
+
+    let scoreA = 0, scoreB = 0;
+    let streakA = 0, streakB = 0;
+
+    function nextQuestion() {
+      current++;
+      if (current >= questions.length) {
+        document.getElementById("question").innerText = "Juego terminado";
+        return;
+      }
+
+      const q = questions[current];
+      document.getElementById("question").innerText =
+        q.q + "\n\nA) " + q.options.A +
+        "\nB) " + q.options.B +
+        "\nC) " + q.options.C +
+        "\nD) " + q.options.D;
+
+      document.getElementById("info").innerText =
+        "Turno actual: Equipo " + turn;
+    }
+
+    function answer(letter) {
+      if (current < 0) return;
+
+      const q = questions[current];
+      const isCorrect = letter === q.correct;
+
+      if (turn === "A") {
+        if (isCorrect) {
+          streakA++;
+          scoreA += streakA;
+          streakB = 0;
+        } else {
+          scoreA = Math.max(0, scoreA - 1);
+          streakA = 0;
+        }
+        turn = "B";
+      } else {
+        if (isCorrect) {
+          streakB++;
+          scoreB += streakB;
+          streakA = 0;
+        } else {
+          scoreB = Math.max(0, scoreB - 1);
+          streakB = 0;
+        }
+        turn = "A";
+      }
+
+      updateUI(isCorrect);
+    }
+
+    function updateUI(correct) {
+      document.getElementById("scoreA").innerText = scoreA;
+      document.getElementById("scoreB").innerText = scoreB;
+      document.getElementById("streakA").innerText = streakA;
+      document.getElementById("streakB").innerText = streakB;
+
+      document.getElementById("info").innerText =
+        correct ? "✅ Respuesta correcta" : "❌ Respuesta incorrecta";
+    }
+  </script>
+
+</body>
+</html>
